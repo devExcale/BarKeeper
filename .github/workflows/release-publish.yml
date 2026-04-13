@@ -55,6 +55,7 @@ jobs:
       - name: Publish GitHub Release
         uses: softprops/action-gh-release@v2
         with:
+          token: ${{ secrets.PAT_TOKEN }}
           tag_name: v${{ steps.bump_version.outputs.version }}
           name: Release v${{ steps.bump_version.outputs.version }}
           files: dist/*.jar
