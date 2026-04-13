@@ -1,0 +1,11 @@
+spring:
+  application:
+    name: BarKeeper
+  datasource:
+    url: ${DB_URL}
+    username: ${DB_USR}
+    password: ${DB_PWD}
+
+discord:
+  token: ${DS_KEY}
+  cache-size: ${DS_CACHE_SIZE:100}
