@@ -13,7 +13,7 @@
 
 	<groupId>dev.excale</groupId>
 	<artifactId>barkeeper</artifactId>
-	<version>26.4.0</version>
+	<version>26.4.1--SNAPSHOT</version>
 
 	<name>BarKeeper</name>
 	<description>BarKeeper</description>
