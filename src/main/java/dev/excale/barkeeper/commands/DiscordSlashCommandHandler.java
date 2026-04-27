@@ -1,4 +1,4 @@
-package dev.excale.barkeeper.component.command;
+package dev.excale.barkeeper.commands;
 
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;

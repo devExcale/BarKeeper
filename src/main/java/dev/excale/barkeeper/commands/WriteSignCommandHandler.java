@@ -1,4 +1,4 @@
-package dev.excale.barkeeper.component.command;
+package dev.excale.barkeeper.commands;
 
 import dev.excale.barkeeper.entity.GuildSettings;
 import dev.excale.barkeeper.service.GuildSettingsService;
@@ -8,10 +8,9 @@ import lombok.extern.log4j.Log4j2;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
-import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
+import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import org.springframework.dao.DataAccessException;
@@ -22,10 +21,14 @@ import java.util.Optional;
 @Log4j2
 @RequiredArgsConstructor
 @Component
-public class SetSignCommandHandler implements DiscordSlashCommandHandler {
+public class WriteSignCommandHandler implements DiscordSlashCommandHandler {
 
-	private static final String COMMAND = "setsign";
-	private static final String OPTION_CHANNEL = "channel";
+	private static final int DISCORD_CHANNEL_NAME_MAX = 100;
+	private static final String COMMAND = "writesign";
+	private static final String OPTION_STATE = "state";
+	private static final String OPTION_NAME = "name";
+	private static final String OPEN = "open";
+	private static final String CLOSED = "closed";
 
 	private final GuildSettingsService guildSettingsService;
 	private final SignService signService;
@@ -37,8 +40,14 @@ public class SetSignCommandHandler implements DiscordSlashCommandHandler {
 
 	@Override
 	public CommandData commandData() {
-		return Commands.slash(COMMAND, "Set the guild channel managed as open/closed sign")
-			.addOption(OptionType.CHANNEL, OPTION_CHANNEL, "Renameable channel to manage", true);
+		OptionData stateOption = new OptionData(OptionType.STRING, OPTION_STATE, "State to configure", true)
+			.addChoice(OPEN, OPEN)
+			.addChoice(CLOSED, CLOSED);
+
+		OptionData nameOption = new OptionData(OptionType.STRING, OPTION_NAME, "Channel name to apply", true);
+
+		return Commands.slash(COMMAND, "Set sign text for open/closed voice state")
+			.addOptions(stateOption, nameOption);
 	}
 
 	@Override
@@ -54,49 +63,44 @@ public class SetSignCommandHandler implements DiscordSlashCommandHandler {
 			return;
 		}
 
-		GuildChannel channel = event.getOption(OPTION_CHANNEL, OptionMapping::getAsChannel);
-		if(channel == null) {
-			reply(event, "You must provide a guild channel.");
+		String mode = event.getOption(OPTION_STATE, OPEN, option -> option.getAsString().trim().toLowerCase());
+		String name = event.getOption(OPTION_NAME, "", option -> option.getAsString().trim());
+
+		if(name.isEmpty()) {
+			reply(event, "Name cannot be empty.");
 			return;
 		}
-
-		if(!isRenameable(channel)) {
-			reply(event, "The selected channel type cannot be renamed.");
-			return;
-		}
-
-		Member selfMember = guild.getSelfMember();
-		if(selfMember == null || !selfMember.hasPermission(channel, Permission.MANAGE_CHANNEL)) {
-			reply(event, "I need MANAGE_CHANNEL permission on that channel.");
+		if(name.length() > DISCORD_CHANNEL_NAME_MAX) {
+			reply(event, "Name is too long. Discord channel names can be at most 100 characters.");
 			return;
 		}
 
 		try {
-			Optional<GuildSettings> updated = guildSettingsService.setManagedChannel(guild.getIdLong(), channel.getIdLong());
+			Optional<GuildSettings> updated;
+			if(OPEN.equals(mode)) {
+				updated = guildSettingsService.setOpenSign(guild.getIdLong(), name);
+			} else if(CLOSED.equals(mode)) {
+				updated = guildSettingsService.setClosedSign(guild.getIdLong(), name);
+			} else {
+				reply(event, "Invalid state. Use open or closed.");
+				return;
+			}
+
 			if(updated.isEmpty()) {
 				reply(event, "Could not persist config for this guild.");
 				return;
 			}
 
 			signService.reconcileGuildSign(guild);
-			reply(event, "Managed sign channel set to #" + channel.getName() + ".");
+			reply(event, "Sign text updated for state '" + mode + "'.");
 		} catch(DataAccessException ex) {
-			log.warn("DB error during setsign in guild {}", guild.getIdLong(), ex);
-			reply(event, "Database error while saving the sign channel.");
+			log.warn("DB error during writesign in guild {}", guild.getIdLong(), ex);
+			reply(event, "Database error while saving sign text.");
 		}
 	}
 
 	private boolean hasManageServerPermission(Member member) {
 		return member != null && member.hasPermission(Permission.MANAGE_SERVER);
-	}
-
-	private boolean isRenameable(GuildChannel channel) {
-		try {
-			channel.getManager().setName(channel.getName());
-			return true;
-		} catch(IllegalStateException | UnsupportedOperationException ex) {
-			return false;
-		}
 	}
 
 	private void reply(SlashCommandInteractionEvent event, String message) {

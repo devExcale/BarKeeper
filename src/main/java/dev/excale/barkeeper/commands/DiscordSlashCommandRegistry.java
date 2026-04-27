@@ -1,4 +1,4 @@
-package dev.excale.barkeeper.component.command;
+package dev.excale.barkeeper.commands;
 
 import lombok.Getter;
 import org.springframework.stereotype.Component;

@@ -1,7 +1,7 @@
 package dev.excale.barkeeper.component;
 
-import dev.excale.barkeeper.component.command.DiscordSlashCommandHandler;
-import dev.excale.barkeeper.component.command.DiscordSlashCommandRegistry;
+import dev.excale.barkeeper.commands.DiscordSlashCommandHandler;
+import dev.excale.barkeeper.commands.DiscordSlashCommandRegistry;
 import dev.excale.barkeeper.service.SignService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
