@@ -3,6 +3,7 @@ package dev.excale.barkeeper.util;
 import lombok.NoArgsConstructor;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.entities.channel.unions.GuildChannelUnion;
 import net.dv8tion.jda.api.interactions.callbacks.IReplyCallback;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
@@ -77,6 +78,9 @@ public class DiscordUtil {
 		if(type == Message.Attachment.class)
 			return OptionType.ATTACHMENT;
 
+		if(type == GuildChannelUnion.class)
+			return OptionType.CHANNEL;
+
 		throw new IllegalArgumentException("Unsupported option type: " + type.getName());
 	}
 
@@ -105,6 +109,9 @@ public class DiscordUtil {
 
 		if(type == Message.Attachment.class)
 			return type.cast(option.getAsAttachment());
+
+		if(type == GuildChannelUnion.class)
+			return type.cast(option.getAsChannel());
 
 		throw new IllegalArgumentException(format("Unknown option type: %s", type.getName()));
 	}
