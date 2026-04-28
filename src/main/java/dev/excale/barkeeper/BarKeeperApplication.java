@@ -2,8 +2,10 @@ package dev.excale.barkeeper;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cloud.openfeign.EnableFeignClients;
 
 @SpringBootApplication
+@EnableFeignClients
 public class BarKeeperApplication {
 
 	public static void main(String[] args) {
