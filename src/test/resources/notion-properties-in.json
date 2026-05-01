@@ -1,0 +1,173 @@
+{
+	"object": "page",
+	"id": "21f0c276-a8de-8042-b777-d2fe829a054f",
+	"created_time": "2025-06-27T12:17:00.000Z",
+	"last_edited_time": "2026-04-28T16:29:00.000Z",
+	"created_by": {
+		"object": "user",
+		"id": "17f08c9f-35df-4ba4-8ecc-98d99dcd1ded"
+	},
+	"last_edited_by": {
+		"object": "user",
+		"id": "34f0c276-a8de-81b7-bd01-0027387fb7d2"
+	},
+	"cover": {
+		"type": "external",
+		"external": {
+			"url": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/2075070/header.jpg?t=1776480908"
+		}
+	},
+	"icon": {
+		"type": "external",
+		"external": {
+			"url": "https://cdn.cloudflare.steamstatic.com/steamcommunity/public/images/apps/2075070/43819e2a7be04a3e7f635b3c2034f87f705574c2.ico"
+		}
+	},
+	"parent": {
+		"type": "data_source_id",
+		"data_source_id": "21f0c276-a8de-8069-a44f-000b6de18485",
+		"database_id": "21f0c276-a8de-80bb-8bde-c4e49c1ca924"
+	},
+	"in_trash": false,
+	"is_archived": false,
+	"is_locked": false,
+	"properties": {
+		"Aggiunto": {
+			"id": "BPfw",
+			"type": "created_time",
+			"created_time": "2025-06-27T12:17:00.000Z"
+		},
+		"Publishers": {
+			"id": "DytZ",
+			"type": "multi_select",
+			"multi_select": [
+				{
+					"id": "8ae61a47-f46c-4fb2-bedf-9cf75f0002aa",
+					"name": "veil",
+					"color": "green"
+				},
+				{
+					"id": "0b381e39-56d1-42d8-a274-226b1078040a",
+					"name": "troy_en",
+					"color": "brown"
+				}
+			]
+		},
+		"Genere": {
+			"id": "LyGM",
+			"type": "multi_select",
+			"multi_select": [
+				{
+					"id": "53520a4d-7c15-486d-aa1c-d2f68b21c50a",
+					"name": "Indie",
+					"color": "gray"
+				},
+				{
+					"id": "117b68ba-6e9b-4139-8655-651bddd9e07c",
+					"name": "Simulation",
+					"color": "purple"
+				},
+				{
+					"id": "47f54b9d-71aa-45fe-965e-e857e658eccc",
+					"name": "Casual",
+					"color": "blue"
+				}
+			]
+		},
+		"Page": {
+			"id": "YELs",
+			"type": "url",
+			"url": "https://store.steampowered.com/app/2075070/KinitoPET/"
+		},
+		"Store": {
+			"id": "byYs",
+			"type": "select",
+			"select": {
+				"id": "3d1a937d-7bb9-466c-8719-788eab57b40d",
+				"name": "Steam",
+				"color": "blue"
+			}
+		},
+		"Rilascio": {
+			"id": "h%3AsK",
+			"type": "date",
+			"date": {
+				"start": "2024-01-09T00:00:00.000+00:00",
+				"end": null,
+				"time_zone": null
+			}
+		},
+		"Notes": {
+			"id": "hUwy",
+			"type": "rich_text",
+			"rich_text": []
+		},
+		"Categorie": {
+			"id": "o%60%7Dc",
+			"type": "multi_select",
+			"multi_select": [
+				{
+					"id": "1a80bd97-ff0a-438d-b7d2-78c579f56f05",
+					"name": "Single-player",
+					"color": "purple"
+				},
+				{
+					"id": "389a3387-e84f-4a90-999c-e38348d94733",
+					"name": "Steam Achievements",
+					"color": "gray"
+				},
+				{
+					"id": "9cec7bad-5aac-4e48-9440-e5b935072eb4",
+					"name": "Family Sharing",
+					"color": "blue"
+				}
+			]
+		},
+		"Prezzo": {
+			"id": "rkK%3D",
+			"type": "number",
+			"number": 5.89
+		},
+		"Scontato": {
+			"id": "vJxu",
+			"type": "number",
+			"number": 4.12
+		},
+		"Developers": {
+			"id": "w%60xx",
+			"type": "multi_select",
+			"multi_select": [
+				{
+					"id": "83dfec3e-51b0-4794-b100-998ead2009ae",
+					"name": "troy_en",
+					"color": "pink"
+				}
+			]
+		},
+		"Nome": {
+			"id": "title",
+			"type": "title",
+			"title": [
+				{
+					"type": "text",
+					"text": {
+						"content": "KinitoPET",
+						"link": null
+					},
+					"annotations": {
+						"bold": true,
+						"italic": false,
+						"strikethrough": false,
+						"underline": false,
+						"code": false,
+						"color": "default"
+					},
+					"plain_text": "KinitoPET",
+					"href": null
+				}
+			]
+		}
+	},
+	"url": "https://app.notion.com/p/KinitoPET-21f0c276a8de8042b777d2fe829a054f",
+	"public_url": null
+}

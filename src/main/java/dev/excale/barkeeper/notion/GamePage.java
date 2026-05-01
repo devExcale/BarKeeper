@@ -1,9 +1,9 @@
 package dev.excale.barkeeper.notion;
 
+import dev.excale.barkeeper.notion.property.*;
+import dev.excale.barkeeper.notion.property.Number;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import tools.jackson.databind.annotation.JsonDeserialize;
-import tools.jackson.databind.annotation.JsonSerialize;
 
 import java.time.Instant;
 import java.util.Set;
@@ -11,42 +11,42 @@ import java.util.UUID;
 
 @Data
 @NoArgsConstructor
-@JsonDeserialize(using = GamePageDeserializer.class)
-@JsonSerialize(using = GamePageSerializer.class)
 public class GamePage {
 
+	@PageId
 	private UUID id;
 
+	@Cover
 	private String cover;
 
-	@Property(id = "byYs", type = "select")
+	@Select("byYs")
 	private String store;
 
-	@Property(id = "rkK%3D", type = "number")
+	@Number("rkK%3D")
 	private Double fullPrice;
 
-	@Property(id = "vJxu", type = "number")
+	@Number("vJxu")
 	private Double discountPrice;
 
-	@Property(id = "h%3AsK", type = "date")
+	@Date("h%3AsK")
 	private Instant releaseDate;
 
-	@Property(id = "YELs", type = "url")
+	@Url("YELs")
 	private String storePage;
 
-	@Property(id = "LyGM", type = "multi_select")
+	@MultiSelect("LyGM")
 	private Set<String> genres;
 
-	@Property(id = "o%60%7Dc", type = "multi_select")
+	@MultiSelect("o%60%7Dc")
 	private Set<String> categories;
 
-	@Property(id = "w%60xx", type = "multi_select")
+	@MultiSelect("w%60xx")
 	private Set<String> developers;
 
-	@Property(id = "DytZ", type = "multi_select")
+	@MultiSelect("DytZ")
 	private Set<String> publishers;
 
-	@Property(id = "BPfw", type = "created_time")
+	@CreatedTime("BPfw")
 	private Instant createdAt;
 
 //	@Property(id = "hUwy", type = "rich_text")
