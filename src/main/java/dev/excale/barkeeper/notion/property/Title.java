@@ -14,6 +14,6 @@ import java.lang.annotation.Target;
 @JacksonAnnotationsInside
 @JsonSerialize(using = CoverSerializer.class)
 @JsonDeserialize(using = CoverDeserializer.class)
-public @interface Cover {
+public @interface Title {
 
 }

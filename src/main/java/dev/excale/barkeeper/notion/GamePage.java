@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.Instant;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
@@ -15,6 +16,9 @@ public class GamePage {
 
 	@PageId
 	private UUID id;
+
+	@Title
+	private List<String> title;
 
 	@Cover
 	private String cover;
@@ -49,7 +53,7 @@ public class GamePage {
 	@CreatedTime("BPfw")
 	private Instant createdAt;
 
-//	@Property(id = "hUwy", type = "rich_text")
+	//	@Property(id = "hUwy", type = "rich_text")
 	private String notes;
 
 }

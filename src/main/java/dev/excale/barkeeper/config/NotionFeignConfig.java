@@ -1,14 +1,23 @@
 package dev.excale.barkeeper.config;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.PropertyAccessor;
 import dev.excale.barkeeper.notion.NotionFlatteningDecoder;
+import dev.excale.barkeeper.notion.NotionPropertyIntrospector;
+import dev.excale.barkeeper.notion.NotionUnflatteningEncoder;
 import feign.RequestInterceptor;
 import feign.codec.Decoder;
+import feign.codec.Encoder;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cloud.openfeign.support.FeignHttpMessageConverters;
+import org.springframework.cloud.openfeign.support.ResponseEntityDecoder;
+import org.springframework.cloud.openfeign.support.SpringDecoder;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
 
-@Configuration
 public class NotionFeignConfig {
 
 	@Value("${notion.api.token}")
@@ -27,8 +36,32 @@ public class NotionFeignConfig {
 	}
 
 	@Bean
-	public Decoder notionDecoder(Decoder defaultDecoder, ObjectMapper objectMapper) {
-		return new NotionFlatteningDecoder(defaultDecoder, objectMapper);
+	public ObjectMapper objectMapper() {
+		return JsonMapper.builder()
+			.annotationIntrospector(new NotionPropertyIntrospector())
+			.changeDefaultVisibility(vc -> vc
+				.withVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.NONE)
+				.withVisibility(PropertyAccessor.GETTER, JsonAutoDetect.Visibility.NONE)
+				.withVisibility(PropertyAccessor.IS_GETTER, JsonAutoDetect.Visibility.NONE)
+				.withVisibility(PropertyAccessor.SETTER, JsonAutoDetect.Visibility.NONE)
+			)
+			.findAndAddModules()
+			.build();
+	}
+
+	@Bean
+	public Decoder notionDecoder(ObjectProvider<FeignHttpMessageConverters> messageConverters, ObjectMapper mapper) {
+
+		// Build default spring feign decoder
+		Decoder defaultSpringDecoder = new ResponseEntityDecoder(new SpringDecoder(messageConverters));
+
+		// Wrap default decoder with notion flattening decoder
+		return new NotionFlatteningDecoder(defaultSpringDecoder, mapper);
+	}
+
+	@Bean
+	public Encoder notionEncoder(ObjectMapper mapper) {
+		return new NotionUnflatteningEncoder(mapper);
 	}
 
 }

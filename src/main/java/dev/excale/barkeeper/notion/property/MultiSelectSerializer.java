@@ -67,16 +67,20 @@ public class MultiSelectSerializer extends StdSerializer<Object> {
 			.writeName("multi_select")
 				.writeStartArray();
 
-		if (value instanceof Collection<?> collection) {
-			for (Object item : collection) {
+		if (value instanceof Collection<?> collection)
+			for(Object item : collection) {
+
+				String name = item.toString()
+					.replace(",", "");
+
 				gen.writeStartObject()
-					.writeStringProperty("name", item.toString())
-				.writeEndObject();
+					.writeStringProperty("name", name)
+					.writeEndObject();
+
 			}
-		}
 
 		gen.writeEndArray()
-		.writeEndObject();
+			.writeEndObject();
 	}
 }
 

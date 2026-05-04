@@ -1,6 +1,6 @@
 package dev.excale.barkeeper.notion.property;
 
-import dev.excale.barkeeper.config.Jackson3Config;
+import dev.excale.barkeeper.config.NotionFeignConfig;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -15,7 +15,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @JsonTest
 class PageIdSerializationTest {
 
-	private final ObjectMapper mapper = new Jackson3Config().jacksonObjectMapper();
+	private final ObjectMapper mapper = new NotionFeignConfig().objectMapper();
 
 	@AllArgsConstructor
 	@NoArgsConstructor

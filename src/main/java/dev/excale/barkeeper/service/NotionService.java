@@ -8,15 +8,16 @@ import dev.excale.barkeeper.steam.Category;
 import dev.excale.barkeeper.steam.Genre;
 import dev.excale.barkeeper.steam.PriceOverview;
 import dev.excale.barkeeper.util.SteamUtil;
+import feign.FeignException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
-import tools.jackson.databind.JsonNode;
-import tools.jackson.databind.ObjectMapper;
 
+import java.nio.charset.StandardCharsets;
 import java.util.HashSet;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.stream.Collectors;
 
@@ -31,45 +32,28 @@ public class NotionService {
 	@SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
 	private final SteamClient steamClient;
 
-	private final ObjectMapper objectMapper = new ObjectMapper();
-
 	@EventListener
 	public void onApplicationStart(ApplicationReadyEvent ignored) {
-		String dbContent = notionClient.queryDataSource("21f0c276a8de8069a44f000b6de18485");
-		parseAndUpdateRows(dbContent);
-	}
-
-	private void parseAndUpdateRows(String dbContent) {
-		try {
-			JsonNode root = objectMapper.readTree(dbContent);
-			JsonNode resultsNode = root.get("results");
-
-			if (resultsNode != null && resultsNode.isArray()) {
-				for (JsonNode recordNode : resultsNode) {
-					processRecord(recordNode);
-				}
-			}
-		} catch (Exception e) {
-			log.error("Failed to parse Notion datasource content", e);
+		List<GamePage> rows = notionClient.queryDataSource("21f0c276a8de8069a44f000b6de18485");
+		for(GamePage row : rows) {
+			processPage(row);
 		}
 	}
 
-	private void processRecord(JsonNode recordNode) {
-		try {
-			GamePage row = objectMapper.treeToValue(recordNode, GamePage.class);
+	private void processPage(GamePage row) {
 
-			// Extract app ID from storePage using regex
-			if (row.getStorePage() != null) {
-				Matcher matcher = SteamUtil.REGEX_STEAM_STORE_URL.matcher(row.getStorePage());
-				if (matcher.matches()) {
-					String appId = matcher.group(1);
-					log.info("Found app ID: {}", appId);
-					fetchAndUpdateRow(row, appId);
-				}
-			}
-		} catch (Exception e) {
-			log.warn("Failed to process record", e);
-		}
+		if(row.getStorePage() == null)
+			return;
+
+		Matcher matcher = SteamUtil.REGEX_STEAM_STORE_URL.matcher(row.getStorePage());
+		if(!matcher.matches())
+			return;
+
+		// Extract app ID from storePage using regex
+		String appId = matcher.group(1);
+		log.info("Found app ID: {}", appId);
+		fetchAndUpdateRow(row, appId);
+
 	}
 
 	private void fetchAndUpdateRow(GamePage row, String appId) {
@@ -80,8 +64,10 @@ public class NotionService {
 				update(row, appDetails);
 				notionClient.updatePage(row.getId().toString(), row);
 			}
-		} catch (Exception e) {
+		} catch (FeignException e) {
 			log.warn("Failed to fetch Steam app details for app ID: {}", appId, e);
+			log.warn(new String(e.request().body(), StandardCharsets.UTF_8));
+			log.warn(e.responseBody().map(byteBuffer -> new String(byteBuffer.array(), StandardCharsets.UTF_8)).orElse("No response body"));
 		}
 	}
 
@@ -90,6 +76,8 @@ public class NotionService {
 		row.setStore("Steam");
 
 		row.setCover(appDetails.getHeaderImage());
+
+		row.setTitle(List.of(appDetails.getName()));
 
 		PriceOverview price = appDetails.getPriceOverview();
 		if(price != null) {

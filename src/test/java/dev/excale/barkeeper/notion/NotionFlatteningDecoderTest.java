@@ -1,25 +1,26 @@
 package dev.excale.barkeeper.notion;
 
+import dev.excale.barkeeper.config.NotionFeignConfig;
 import feign.Request;
 import feign.Response;
 import feign.codec.Decoder;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import tools.jackson.core.type.TypeReference;
 import tools.jackson.databind.ObjectMapper;
-import tools.jackson.databind.json.JsonMapper;
 
+import java.lang.reflect.Type;
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
-@Disabled
 @ExtendWith(MockitoExtension.class)
 class NotionFlatteningDecoderTest {
 
@@ -31,9 +32,7 @@ class NotionFlatteningDecoderTest {
 	@BeforeEach
 	void setUp() {
 		// Initialize Jackson 3 Mapper with our Introspector
-		ObjectMapper mapper = JsonMapper.builder()
-			.annotationIntrospector(new NotionPropertyIntrospector())
-			.build();
+		ObjectMapper mapper = new NotionFeignConfig().objectMapper();
 		decoder = new NotionFlatteningDecoder(delegateDecoder, mapper);
 	}
 
@@ -72,6 +71,77 @@ class NotionFlatteningDecoderTest {
 		// (If not flattened, Jackson wouldn't find "byYs" or "rkK%3D" at the root)
 		assertEquals("Steam", page.getStore());
 		assertEquals(5.89, page.getFullPrice());
+		verifyNoInteractions(delegateDecoder);
+	}
+
+	@Test
+	void givenRawNotionListResponse_whenDecodedToGamePageList_thenPropertiesAreFlattened() throws Exception {
+		// Given a Notion list response
+		String rawJsonListIn = """
+            {
+                "object": "list",
+                "results": [
+                    {
+                        "object": "page",
+                        "id": "21f0c276-a8de-8042-b777-d2fe829a054f",
+                        "properties": {
+                            "Store": {
+                                "id": "byYs",
+                                "type": "select",
+                                "select": { "name": "Steam" }
+                            },
+                            "Prezzo": {
+                                "id": "rkK%3D",
+                                "type": "number",
+                                "number": 5.89
+                            }
+                        }
+                    },
+                    {
+                        "object": "page",
+                        "id": "32a1b489-c9ef-9153-c888-e3ab930b165c",
+                        "properties": {
+                            "Store": {
+                                "id": "byYs",
+                                "type": "select",
+                                "select": { "name": "Epic Games" }
+                            },
+                            "Prezzo": {
+                                "id": "rkK%3D",
+                                "type": "number",
+                                "number": 19.99
+                            }
+                        }
+                    }
+                ]
+            }
+            """;
+
+		Response response = buildFeignResponse(rawJsonListIn);
+
+		// Extract the reflective Type for List<GamePage> to simulate OpenFeign's target type
+		Type listType = new TypeReference<List<GamePage>>() {}.getType();
+
+		// When
+		Object result = decoder.decode(response, listType);
+
+		// Then
+		assertInstanceOf(List.class, result);
+
+		@SuppressWarnings("unchecked")
+		List<GamePage> pages = (List<GamePage>) result;
+		assertEquals(2, pages.size());
+
+		// Assert first item
+		GamePage page1 = pages.get(0);
+		assertEquals("Steam", page1.getStore());
+		assertEquals(5.89, page1.getFullPrice());
+
+		// Assert second item
+		GamePage page2 = pages.get(1);
+		assertEquals("Epic Games", page2.getStore());
+		assertEquals(19.99, page2.getFullPrice());
+
 		verifyNoInteractions(delegateDecoder);
 	}
 
