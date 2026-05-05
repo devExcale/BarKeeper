@@ -16,8 +16,11 @@ import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 
 import java.nio.charset.StandardCharsets;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.HashSet;
 import java.util.List;
+import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.stream.Collectors;
 
@@ -36,6 +39,12 @@ public class NotionService {
 	public void onApplicationStart(ApplicationReadyEvent ignored) {
 		List<GamePage> rows = notionClient.queryDataSource("21f0c276a8de8069a44f000b6de18485");
 		for(GamePage row : rows) {
+
+			Instant lastEditedDay = row.getLastEditedAt().truncatedTo(ChronoUnit.DAYS);
+			Instant today = Instant.now().truncatedTo(ChronoUnit.DAYS);
+			if(!lastEditedDay.isBefore(today))
+				continue;
+
 			processPage(row);
 		}
 	}

@@ -7,9 +7,9 @@ import tools.jackson.databind.deser.std.StdDeserializer;
 
 import java.time.Instant;
 
-public class CreatedTimeDeserializer extends StdDeserializer<Object> {
+public class LastEditedTimeDeserializer extends StdDeserializer<Object> {
 
-	public CreatedTimeDeserializer() {
+	public LastEditedTimeDeserializer() {
 		super(Object.class);
 	}
 
@@ -20,11 +20,7 @@ public class CreatedTimeDeserializer extends StdDeserializer<Object> {
 		if(root == null || root.isNull())
 			return null;
 
-		JsonNode createdTimeNode = root.get("created_time");
-		if(createdTimeNode == null || createdTimeNode.isNull())
-			return null;
-
-		return Instant.parse(createdTimeNode.asString());
+		return Instant.parse(root.asString());
 	}
 
 }

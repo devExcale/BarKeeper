@@ -2,6 +2,7 @@ package dev.excale.barkeeper.notion;
 
 import dev.excale.barkeeper.notion.property.*;
 import dev.excale.barkeeper.notion.property.Number;
+import lombok.extern.slf4j.Slf4j;
 import tools.jackson.databind.PropertyName;
 import tools.jackson.databind.cfg.MapperConfig;
 import tools.jackson.databind.introspect.Annotated;
@@ -12,17 +13,19 @@ import java.lang.reflect.Method;
 import java.util.Map;
 import java.util.Objects;
 
+@Slf4j
 public class NotionPropertyIntrospector extends JacksonAnnotationIntrospector {
 
 	private static final Map<Class<? extends Annotation>, Class<?>> MAP_DESERIALIZERS = Map.of(
-		Select.class,      SelectDeserializer.class,
-		MultiSelect.class, MultiSelectDeserializer.class,
-		Url.class,         UrlDeserializer.class,
-		Cover.class,       CoverDeserializer.class,
-		Number.class,      NumberDeserializer.class,
-		Date.class,        DateDeserializer.class,
-		CreatedTime.class, CreatedTimeDeserializer.class,
-		Title.class,       TitleDeserializer.class
+		Select.class,         SelectDeserializer.class,
+		MultiSelect.class,    MultiSelectDeserializer.class,
+		Url.class,            UrlDeserializer.class,
+		Cover.class,          CoverDeserializer.class,
+		Number.class,         NumberDeserializer.class,
+		Date.class,           DateDeserializer.class,
+		CreatedTime.class,    CreatedTimeDeserializer.class,
+		Title.class,          TitleDeserializer.class,
+		LastEditedTime.class, LastEditedTimeDeserializer.class
 	);
 
 	private static final Map<Class<? extends Annotation>, Class<?>> MAP_SERIALIZERS = Map.of(
@@ -36,9 +39,10 @@ public class NotionPropertyIntrospector extends JacksonAnnotationIntrospector {
 	);
 
 	private static final Map<Class<? extends Annotation>, PropertyName> MAP_CONST_NAMES = Map.of(
-		PageId.class, PropertyName.construct("id"),
-		Cover.class,  PropertyName.construct("cover"),
-		Title.class,  PropertyName.construct("title")
+		PageId.class,         PropertyName.construct("id"),
+		Cover.class,          PropertyName.construct("cover"),
+		Title.class,          PropertyName.construct("title"),
+		LastEditedTime.class, PropertyName.construct("last_edited_time")
 	);
 
 	@Override

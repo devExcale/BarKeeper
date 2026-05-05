@@ -53,6 +53,9 @@ public class GamePage {
 	@CreatedTime("BPfw")
 	private Instant createdAt;
 
+	@LastEditedTime
+	private Instant lastEditedAt;
+
 	//	@Property(id = "hUwy", type = "rich_text")
 	private String notes;
 
