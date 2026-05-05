@@ -25,7 +25,8 @@ public class NotionPropertyIntrospector extends JacksonAnnotationIntrospector {
 		Date.class,           DateDeserializer.class,
 		CreatedTime.class,    InstantDeserializer.class,
 		Title.class,          TitleDeserializer.class,
-		LastEditedTime.class, InstantDeserializer.class
+		LastEditedTime.class, InstantDeserializer.class,
+		LastEditedBy.class,   UserIdDeserializer.class
 	);
 
 	private static final Map<Class<? extends Annotation>, Class<?>> MAP_SERIALIZERS = Map.of(
@@ -43,7 +44,8 @@ public class NotionPropertyIntrospector extends JacksonAnnotationIntrospector {
 		Cover.class,          PropertyName.construct("cover"),
 		Title.class,          PropertyName.construct("title"),
 		CreatedTime.class,    PropertyName.construct("created_time"),
-		LastEditedTime.class, PropertyName.construct("last_edited_time")
+		LastEditedTime.class, PropertyName.construct("last_edited_time"),
+		LastEditedBy.class,   PropertyName.construct("last_edited_by")
 	);
 
 	@Override

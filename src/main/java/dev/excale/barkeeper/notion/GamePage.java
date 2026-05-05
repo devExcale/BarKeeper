@@ -29,6 +29,9 @@ public class GamePage {
 	@LastEditedTime
 	private Instant lastEditedAt;
 
+	@LastEditedBy
+	private UUID lastEditedBy;
+
 	@Select("byYs")
 	private String store;
 

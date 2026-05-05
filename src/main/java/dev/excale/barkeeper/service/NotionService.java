@@ -35,6 +35,8 @@ public class NotionService {
 	@SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
 	private final SteamClient steamClient;
 
+	private final UUID botId = UUID.fromString("34f0c276-a8de-81b7-bd01-0027387fb7d2");
+
 	@EventListener
 	public void onApplicationStart(ApplicationReadyEvent ignored) {
 		List<GamePage> rows = notionClient.queryDataSource("21f0c276a8de8069a44f000b6de18485");
@@ -42,7 +44,7 @@ public class NotionService {
 
 			Instant lastEditedDay = row.getLastEditedAt().truncatedTo(ChronoUnit.DAYS);
 			Instant today = Instant.now().truncatedTo(ChronoUnit.DAYS);
-			if(!lastEditedDay.isBefore(today))
+			if(!lastEditedDay.isBefore(today) && botId.equals(row.getLastEditedBy()))
 				continue;
 
 			processPage(row);
