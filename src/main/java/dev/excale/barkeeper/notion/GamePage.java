@@ -23,6 +23,12 @@ public class GamePage {
 	@Cover
 	private String cover;
 
+	@CreatedTime
+	private Instant createdAt;
+
+	@LastEditedTime
+	private Instant lastEditedAt;
+
 	@Select("byYs")
 	private String store;
 
@@ -49,12 +55,6 @@ public class GamePage {
 
 	@MultiSelect("DytZ")
 	private Set<String> publishers;
-
-	@CreatedTime("BPfw")
-	private Instant createdAt;
-
-	@LastEditedTime
-	private Instant lastEditedAt;
 
 	//	@Property(id = "hUwy", type = "rich_text")
 	private String notes;

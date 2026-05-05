@@ -13,7 +13,7 @@ import java.lang.annotation.Target;
 @Target(ElementType.FIELD)
 @JacksonAnnotationsInside
 @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-@JsonDeserialize(using = LastEditedTimeDeserializer.class)
+@JsonDeserialize(using = InstantDeserializer.class)
 public @interface LastEditedTime {
 
 }

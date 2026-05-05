@@ -7,9 +7,9 @@ import tools.jackson.databind.deser.std.StdDeserializer;
 
 import java.time.Instant;
 
-public class LastEditedTimeDeserializer extends StdDeserializer<Object> {
+public class InstantDeserializer extends StdDeserializer<Object> {
 
-	public LastEditedTimeDeserializer() {
+	public InstantDeserializer() {
 		super(Object.class);
 	}
 
