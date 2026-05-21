@@ -1,6 +1,7 @@
 package dev.excale.barkeeper.sync;
 
 import dev.excale.barkeeper.notion.NotionClient;
+import dev.excale.barkeeper.notion.NotionProperties;
 import dev.excale.barkeeper.steam.SteamClient;
 import dev.excale.barkeeper.notion.model.GamePage;
 import dev.excale.barkeeper.steam.SteamUtil;
@@ -36,7 +37,7 @@ public class SteamNotionSyncService {
 	@SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
 	private final SteamClient steamClient;
 
-	private final UUID botId = UUID.fromString("34f0c276-a8de-81b7-bd01-0027387fb7d2");
+	private final NotionProperties props;
 
 	@EventListener
 	public void onApplicationStart(ApplicationReadyEvent ignored) {
@@ -49,7 +50,9 @@ public class SteamNotionSyncService {
 
 		log.info("Starting Steam-Notion sync...");
 
-		List<GamePage> rows = notionClient.queryDataSource("21f0c276a8de8069a44f000b6de18485");
+		UUID botId = props.botUuid();
+
+		List<GamePage> rows = notionClient.queryDataSource(props.datasourceId());
 		for(GamePage row : rows) {
 
 			Instant lastEditedDay = row.getLastEditedAt().truncatedTo(ChronoUnit.DAYS);

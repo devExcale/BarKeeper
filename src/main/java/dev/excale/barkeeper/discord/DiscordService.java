@@ -1,6 +1,5 @@
 package dev.excale.barkeeper.discord;
 
-import dev.excale.barkeeper.discord.command.CommandDispatcher;
 import dev.excale.barkeeper.discord.command.event.CommandUpdateEvent;
 import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
@@ -10,7 +9,6 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.requests.GatewayIntent;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
@@ -26,11 +24,11 @@ public class DiscordService {
 	private final JDA jda;
 
 	public DiscordService(
-		@Value("${discord.token:}") String token,
+		DiscordProperties props,
 		List<ListenerAdapter> featureListeners
 	) {
 
-		this.jda = JDABuilder.createDefault(token)
+		this.jda = JDABuilder.createDefault(props.botKey())
 			.enableIntents(
 				GatewayIntent.GUILD_MESSAGES,
 				GatewayIntent.MESSAGE_CONTENT,

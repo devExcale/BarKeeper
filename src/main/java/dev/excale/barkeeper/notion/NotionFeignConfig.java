@@ -8,8 +8,8 @@ import dev.excale.barkeeper.notion.codec.NotionUnflatteningEncoder;
 import feign.RequestInterceptor;
 import feign.codec.Decoder;
 import feign.codec.Encoder;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.ObjectProvider;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.openfeign.support.FeignHttpMessageConverters;
 import org.springframework.cloud.openfeign.support.ResponseEntityDecoder;
 import org.springframework.cloud.openfeign.support.SpringDecoder;
@@ -17,19 +17,16 @@ import org.springframework.context.annotation.Bean;
 import tools.jackson.databind.ObjectMapper;
 import tools.jackson.databind.json.JsonMapper;
 
+@RequiredArgsConstructor
 public class NotionFeignConfig {
 
-	@Value("${notion.api.token}")
-	private String notionToken;
-
-	@Value("${notion.api.version:2026-03-11}")
-	private String notionVersion;
+	private final NotionProperties props;
 
 	@Bean
 	public RequestInterceptor requestInterceptor() {
 		return requestTemplate -> {
-			requestTemplate.header("Authorization", "Bearer " + notionToken);
-			requestTemplate.header("Notion-Version", notionVersion);
+			requestTemplate.header("Authorization", "Bearer " + props.apiKey());
+			requestTemplate.header("Notion-Version", props.apiVersion());
 			requestTemplate.header("Content-Type", "application/json");
 		};
 	}

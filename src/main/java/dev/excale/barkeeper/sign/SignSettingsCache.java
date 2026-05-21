@@ -4,22 +4,26 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
 
-import org.springframework.beans.factory.annotation.Value;
+import dev.excale.barkeeper.discord.DiscordProperties;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Component;
 
+@Log4j2
 @Component
 public class SignSettingsCache {
 
 	private final Map<Long, SignSettings> cache;
 
 	public SignSettingsCache(
-		@Value("${discord.cache-size:20}") int maxEntries
+		DiscordProperties props
 	) {
+
+		log.info("Initializing SignSettingsCache with cache size: {}", props.cacheSize());
 
 		this.cache = new LinkedHashMap<>(16, 0.75f, true) {
 			@Override
 			protected boolean removeEldestEntry(Map.Entry<Long, SignSettings> eldest) {
-				return size() > maxEntries;
+				return size() > props.cacheSize();
 			}
 		};
 
