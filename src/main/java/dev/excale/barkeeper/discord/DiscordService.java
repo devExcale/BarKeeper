@@ -36,7 +36,7 @@ public class DiscordService {
 				GatewayIntent.MESSAGE_CONTENT,
 				GatewayIntent.GUILD_VOICE_STATES
 			)
-			.addEventListeners(featureListeners)
+			.addEventListeners(featureListeners.toArray())
 			.build();
 
 		log.info("JDA connected");
