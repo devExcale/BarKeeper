@@ -13,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.nio.charset.StandardCharsets;
@@ -39,6 +40,15 @@ public class SteamNotionSyncService {
 
 	@EventListener
 	public void onApplicationStart(ApplicationReadyEvent ignored) {
+		sync();
+	}
+
+	// 1:30 PM every day
+	@Scheduled(cron = "0 30 13 * * *")
+	public void sync() {
+
+		log.info("Starting Steam-Notion sync...");
+
 		List<GamePage> rows = notionClient.queryDataSource("21f0c276a8de8069a44f000b6de18485");
 		for(GamePage row : rows) {
 
@@ -49,6 +59,9 @@ public class SteamNotionSyncService {
 
 			processPage(row);
 		}
+
+		log.info("Steam-Notion sync completed.");
+
 	}
 
 	private void processPage(GamePage row) {
