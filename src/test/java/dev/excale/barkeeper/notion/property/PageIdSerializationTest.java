@@ -15,7 +15,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @JsonTest
 class PageIdSerializationTest {
 
-	private final ObjectMapper mapper = new NotionFeignConfig().objectMapper();
+	private final ObjectMapper mapper = new NotionFeignConfig(null).objectMapper();
 
 	@AllArgsConstructor
 	@NoArgsConstructor

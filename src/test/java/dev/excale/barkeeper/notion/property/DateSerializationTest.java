@@ -16,7 +16,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 @JsonTest
 class DateSerializationTest {
 
-	private final ObjectMapper mapper = new NotionFeignConfig().objectMapper();
+	private final ObjectMapper mapper = new NotionFeignConfig(null).objectMapper();
 
 	@AllArgsConstructor
 	@NoArgsConstructor

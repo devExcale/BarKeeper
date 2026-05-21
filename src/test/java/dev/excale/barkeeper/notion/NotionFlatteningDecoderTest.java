@@ -33,7 +33,7 @@ class NotionFlatteningDecoderTest {
 	@BeforeEach
 	void setUp() {
 		// Initialize Jackson 3 Mapper with our Introspector
-		ObjectMapper mapper = new NotionFeignConfig().objectMapper();
+		ObjectMapper mapper = new NotionFeignConfig(null).objectMapper();
 		decoder = new NotionFlatteningDecoder(delegateDecoder, mapper);
 	}
 

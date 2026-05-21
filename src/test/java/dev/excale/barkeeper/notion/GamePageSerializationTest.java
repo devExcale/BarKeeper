@@ -14,7 +14,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 @JsonTest
 class GamePageSerializationTest {
 
-	private final ObjectMapper mapper = new NotionFeignConfig().objectMapper();
+	private final ObjectMapper mapper = new NotionFeignConfig(null).objectMapper();
 
 	@Test
 	void givenFlattenedJson_whenDeserialized_thenGamePagePopulated() throws Exception {
