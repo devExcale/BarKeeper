@@ -36,7 +36,7 @@ class DateSerializationTest {
 		// When
 		String json = mapper.writeValueAsString(target);
 		// Then
-		String expectedJson = "{\"h%3AsK\":{\"date\":{\"start\":\"2023-10-12T00:00:00Z\"}}}";
+		String expectedJson = "{\"h%3AsK\":{\"type\":\"date\",\"date\":{\"start\":\"2023-10-12T00:00:00Z\"}}}";
 		assertEquals(expectedJson, json);
 	}
 

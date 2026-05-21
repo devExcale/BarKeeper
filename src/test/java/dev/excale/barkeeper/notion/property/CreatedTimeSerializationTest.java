@@ -38,7 +38,7 @@ class CreatedTimeSerializationTest {
 		String json = mapper.writeValueAsString(target);
 
 		// Then
-		String expectedJson = "{\"BPfw\":{\"created_time\":\"2023-10-12T00:00:00Z\"}}";
+		String expectedJson = "{}";
 		assertEquals(expectedJson, json);
 	}
 
@@ -47,11 +47,7 @@ class CreatedTimeSerializationTest {
 		// Given
 		String jsonIn = """
             {
-                "BPfw": {
-                    "id": "BPfw",
-                    "type": "created_time",
-                    "created_time": "2023-10-12T00:00:00Z"
-                }
+                "created_time": "2023-10-12T00:00:00Z"
             }
             """;
 
@@ -65,7 +61,7 @@ class CreatedTimeSerializationTest {
 	@Test
 	void givenEmptyCreatedTimeJson_whenDeserialized_thenReturnsNull() throws Exception {
 		// Given
-		String jsonIn = "{\"BPfw\":{\"id\":\"BPfw\",\"type\":\"created_time\",\"created_time\":null}}";
+		String jsonIn = "{\"created_time\":null}";
 
 		// When
 		DummyTarget result = mapper.readValue(jsonIn, DummyTarget.class);
