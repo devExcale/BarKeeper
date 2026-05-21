@@ -13,6 +13,7 @@ public class MultiSelectSerializer extends StdSerializer<Object> {
 
 	private final MultiSelect annotation;
 
+	@SuppressWarnings("unused")
 	public MultiSelectSerializer() {
 		super(Object.class);
 		this.annotation = null;
@@ -83,4 +84,3 @@ public class MultiSelectSerializer extends StdSerializer<Object> {
 			.writeEndObject();
 	}
 }
-

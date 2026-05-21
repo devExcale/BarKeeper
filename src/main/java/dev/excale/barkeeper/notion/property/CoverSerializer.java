@@ -11,6 +11,7 @@ public class CoverSerializer extends StdSerializer<Object> {
 
 	private final Cover annotation;
 
+	@SuppressWarnings("unused")
 	public CoverSerializer() {
 		super(Object.class);
 		this.annotation = null;

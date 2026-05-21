@@ -11,6 +11,7 @@ public class UrlSerializer extends StdSerializer<Object> {
 
 	private final Url annotation;
 
+	@SuppressWarnings("unused")
 	public UrlSerializer() {
 		super(Object.class);
 		this.annotation = null;
@@ -68,4 +69,3 @@ public class UrlSerializer extends StdSerializer<Object> {
 	}
 
 }
-

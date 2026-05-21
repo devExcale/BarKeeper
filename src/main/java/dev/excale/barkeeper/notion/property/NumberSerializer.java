@@ -11,6 +11,7 @@ public class NumberSerializer extends StdSerializer<Object> {
 
 	private final Number annotation;
 
+	@SuppressWarnings("unused")
 	public NumberSerializer() {
 		super(Object.class);
 		this.annotation = null;
@@ -68,4 +69,3 @@ public class NumberSerializer extends StdSerializer<Object> {
 	}
 
 }
-

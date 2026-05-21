@@ -1,6 +1,6 @@
 package dev.excale.barkeeper.notion.property;
 
-import dev.excale.barkeeper.config.NotionFeignConfig;
+import dev.excale.barkeeper.notion.NotionFeignConfig;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -23,7 +23,7 @@ class CreatedTimeSerializationTest {
 	@Getter
 	static class DummyTarget {
 
-		@CreatedTime("BPfw")
+		@CreatedTime
 		private Instant createdAt;
 
 	}

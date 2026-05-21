@@ -1,6 +1,6 @@
 package dev.excale.barkeeper.notion;
 
-import dev.excale.barkeeper.config.NotionFeignConfig;
+import dev.excale.barkeeper.notion.model.GamePage;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.json.JsonTest;
 import tools.jackson.core.type.TypeReference;

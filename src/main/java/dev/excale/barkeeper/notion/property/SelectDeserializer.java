@@ -15,6 +15,7 @@ public class SelectDeserializer extends StdDeserializer<Object> {
 	/**
 	 * Default constructor needed by Jackson
 	 */
+	@SuppressWarnings("unused")
 	public SelectDeserializer() {
 		super(Object.class);
 		this.annotation = null;
@@ -84,4 +85,3 @@ public class SelectDeserializer extends StdDeserializer<Object> {
 	}
 
 }
-

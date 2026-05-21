@@ -14,6 +14,7 @@ public class SelectSerializer extends StdSerializer<Object> {
 	/**
 	 * Default constructor needed by Jackson
 	 */
+	@SuppressWarnings("unused")
 	public SelectSerializer() {
 		super(Object.class);
 		this.annotation = null;

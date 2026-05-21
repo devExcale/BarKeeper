@@ -32,4 +32,3 @@ public class TitleDeserializer extends StdDeserializer<Object> {
 	}
 
 }
-

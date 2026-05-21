@@ -1,6 +1,7 @@
 package dev.excale.barkeeper.notion;
 
-import dev.excale.barkeeper.config.NotionFeignConfig;
+import dev.excale.barkeeper.notion.codec.NotionFlatteningDecoder;
+import dev.excale.barkeeper.notion.model.GamePage;
 import feign.Request;
 import feign.Response;
 import feign.codec.Decoder;

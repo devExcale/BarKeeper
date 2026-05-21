@@ -12,7 +12,6 @@ import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class MultiSelectDeserializer extends StdDeserializer<Object> {
@@ -20,6 +19,7 @@ public class MultiSelectDeserializer extends StdDeserializer<Object> {
 	private final MultiSelect annotation;
 	private final Class<?> rawClass;
 
+	@SuppressWarnings("unused")
 	public MultiSelectDeserializer() {
 		super(Object.class);
 		this.annotation = null;
@@ -67,7 +67,7 @@ public class MultiSelectDeserializer extends StdDeserializer<Object> {
 		if (multiSelectNode.isArray()) stream = multiSelectNode.valueStream();
 		else stream = multiSelectNode.optional("options").map(JsonNode::valueStream).orElseGet(Stream::empty);
 
-		List<String> results = stream.map(node -> node.get("name").asString()).collect(Collectors.toList());
+		List<String> results = stream.map(node -> node.get("name").asString()).toList();
 
 		if (rawClass != null && Set.class.isAssignableFrom(rawClass)) return new LinkedHashSet<>(results);
 		return results;

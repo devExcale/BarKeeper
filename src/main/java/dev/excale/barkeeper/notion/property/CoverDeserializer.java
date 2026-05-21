@@ -12,6 +12,7 @@ public class CoverDeserializer extends StdDeserializer<Object> {
 
 	private final Cover annotation;
 
+	@SuppressWarnings("unused")
 	public CoverDeserializer() {
 		super(Object.class);
 		this.annotation = null;
@@ -71,4 +72,3 @@ public class CoverDeserializer extends StdDeserializer<Object> {
 	}
 
 }
-

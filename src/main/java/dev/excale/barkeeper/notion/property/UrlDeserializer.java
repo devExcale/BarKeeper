@@ -12,6 +12,7 @@ public class UrlDeserializer extends StdDeserializer<Object> {
 
 	private final Url annotation;
 
+	@SuppressWarnings("unused")
 	public UrlDeserializer() {
 		super(Object.class);
 		this.annotation = null;
@@ -72,4 +73,3 @@ public class UrlDeserializer extends StdDeserializer<Object> {
 	}
 
 }
-
