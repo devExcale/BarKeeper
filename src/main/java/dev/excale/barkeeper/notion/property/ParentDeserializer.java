@@ -5,6 +5,8 @@ import tools.jackson.databind.DeserializationContext;
 import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.deser.std.StdDeserializer;
 
+import java.util.UUID;
+
 public class ParentDeserializer extends StdDeserializer<Object> {
 
 	public ParentDeserializer() {
@@ -19,11 +21,10 @@ public class ParentDeserializer extends StdDeserializer<Object> {
 			return null;
 
 		JsonNode dataSourceNode = root.get("data_source_id");
-		if (dataSourceNode != null && !dataSourceNode.isNull())
-			return dataSourceNode.asString();
+		if (dataSourceNode == null || dataSourceNode.isNull())
+			return null;
 
-		return null;
+		return UUID.fromString(dataSourceNode.asString());
 	}
 
 }
-

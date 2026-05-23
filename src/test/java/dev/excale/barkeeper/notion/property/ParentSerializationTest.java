@@ -24,7 +24,7 @@ class ParentSerializationTest {
 	static class DummyTarget {
 
 		@Parent
-		private String parent;
+		private UUID parent;
 
 	}
 
@@ -32,7 +32,7 @@ class ParentSerializationTest {
 	void givenParentDataSourceId_whenSerialized_thenOutputsCorrectNotionFormat() {
 
 		// Given
-		String randomId = UUID.randomUUID().toString();
+		UUID randomId = UUID.randomUUID();
 		DummyTarget target = new DummyTarget(randomId);
 
 		// When
@@ -47,7 +47,7 @@ class ParentSerializationTest {
 			    }
 			}
 			"""
-			.replace("randomId", randomId)
+			.replace("randomId", randomId.toString())
 			.replaceAll("\\s+", "");
 		assertEquals(expectedJson, json);
 
@@ -57,7 +57,7 @@ class ParentSerializationTest {
 	void givenParentDataSourceJson_whenDeserialized_thenExtractsDataSourceId() throws Exception {
 
 		// Given
-		String randomId = UUID.randomUUID().toString();
+		UUID randomId = UUID.randomUUID();
 		String jsonIn = """
 			{
 			    "parent": {
@@ -66,7 +66,7 @@ class ParentSerializationTest {
 			    }
 			}
 			"""
-			.replace("randomId", randomId);
+			.replace("randomId", randomId.toString());
 
 		// When
 		DummyTarget result = mapper.readValue(jsonIn, DummyTarget.class);

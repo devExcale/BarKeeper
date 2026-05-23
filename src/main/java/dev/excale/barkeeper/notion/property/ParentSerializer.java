@@ -30,4 +30,3 @@ public class ParentSerializer extends StdSerializer<Object> {
 	}
 
 }
-
