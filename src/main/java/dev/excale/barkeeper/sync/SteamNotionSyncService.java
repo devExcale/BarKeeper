@@ -39,6 +39,8 @@ public class SteamNotionSyncService {
 
 	private final NotionProperties props;
 
+	private final GamePageMapper gamePageMapper;
+
 	@EventListener
 	public void onApplicationStart(ApplicationReadyEvent ignored) {
 		sync();
@@ -88,7 +90,7 @@ public class SteamNotionSyncService {
 			// Fetch app details from Steam
 			AppDetails appDetails = steamClient.getAppDetails(appId);
 			if (appDetails != null) {
-				update(row, appDetails);
+				gamePageMapper.update(row, appDetails);
 				notionClient.updatePage(row.getId().toString(), row);
 			}
 		} catch (FeignException e) {
@@ -96,45 +98,6 @@ public class SteamNotionSyncService {
 			log.warn(new String(e.request().body(), StandardCharsets.UTF_8));
 			log.warn(e.responseBody().map(byteBuffer -> new String(byteBuffer.array(), StandardCharsets.UTF_8)).orElse("No response body"));
 		}
-	}
-
-	private void update(GamePage row, AppDetails appDetails) {
-
-		row.setStore("Steam");
-
-		row.setCover(appDetails.getHeaderImage());
-
-		row.setTitle(List.of(appDetails.getName()));
-
-		PriceOverview price = appDetails.getPriceOverview();
-		if(price != null) {
-			row.setFullPrice(price.getInitialPrice() / 100d);
-			row.setDiscountPrice(price.getFinalPrice() / 100d);
-		} else {
-			row.setFullPrice(0d);
-			row.setDiscountPrice(0d);
-		}
-
-		row.setReleaseDate(appDetails.getReleaseDate());
-
-		row.setGenres(
-			appDetails.getGenres()
-				.stream()
-				.map(Genre::getDescription)
-				.collect(Collectors.toSet())
-		);
-
-		row.setCategories(
-			appDetails.getCategories()
-				.stream()
-				.map(Category::getDescription)
-				.collect(Collectors.toSet())
-		);
-
-		row.setDevelopers(new HashSet<>(appDetails.getDevelopers()));
-
-		row.setPublishers(new HashSet<>(appDetails.getPublishers()));
-
 	}
 
 }
