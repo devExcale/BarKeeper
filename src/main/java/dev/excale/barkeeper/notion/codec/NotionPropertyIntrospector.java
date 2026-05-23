@@ -18,36 +18,39 @@ public class NotionPropertyIntrospector extends JacksonAnnotationIntrospector {
 
 	private static final String PROPERTY_PACKAGE = PageId.class.getPackageName();
 
-	private static final Map<Class<? extends Annotation>, Class<?>> MAP_DESERIALIZERS = Map.of(
-		Cover.class,          CoverDeserializer.class,
-		CreatedTime.class,    InstantDeserializer.class,
-		Date.class,           DateDeserializer.class,
-		LastEditedBy.class,   UserIdDeserializer.class,
-		LastEditedTime.class, InstantDeserializer.class,
-		MultiSelect.class,    MultiSelectDeserializer.class,
-		Number.class,         NumberDeserializer.class,
-		Select.class,         SelectDeserializer.class,
-		Title.class,          TitleDeserializer.class,
-		Url.class,            UrlDeserializer.class
+	private static final Map<Class<? extends Annotation>, Class<?>> MAP_DESERIALIZERS = Map.ofEntries(
+		Map.entry(Cover.class,          CoverDeserializer.class),
+		Map.entry(CreatedTime.class,    InstantDeserializer.class),
+		Map.entry(Date.class,           DateDeserializer.class),
+		Map.entry(LastEditedBy.class,   UserIdDeserializer.class),
+		Map.entry(LastEditedTime.class, InstantDeserializer.class),
+		Map.entry(MultiSelect.class,    MultiSelectDeserializer.class),
+		Map.entry(Number.class,         NumberDeserializer.class),
+		Map.entry(Parent.class,         ParentDeserializer.class),
+		Map.entry(Select.class,         SelectDeserializer.class),
+		Map.entry(Title.class,          TitleDeserializer.class),
+		Map.entry(Url.class,            UrlDeserializer.class)
 	);
 
-	private static final Map<Class<? extends Annotation>, Class<?>> MAP_SERIALIZERS = Map.of(
-		Cover.class,       CoverSerializer.class,
-		Date.class,        DateSerializer.class,
-		MultiSelect.class, MultiSelectSerializer.class,
-		Number.class,      NumberSerializer.class,
-		Select.class,      SelectSerializer.class,
-		Title.class,       TitleSerializer.class,
-		Url.class,         UrlSerializer.class
+	private static final Map<Class<? extends Annotation>, Class<?>> MAP_SERIALIZERS = Map.ofEntries(
+		Map.entry(Cover.class,       CoverSerializer.class),
+		Map.entry(Date.class,        DateSerializer.class),
+		Map.entry(MultiSelect.class, MultiSelectSerializer.class),
+		Map.entry(Number.class,      NumberSerializer.class),
+		Map.entry(Parent.class,      ParentSerializer.class),
+		Map.entry(Select.class,      SelectSerializer.class),
+		Map.entry(Title.class,       TitleSerializer.class),
+		Map.entry(Url.class,         UrlSerializer.class)
 	);
 
-	private static final Map<Class<? extends Annotation>, PropertyName> MAP_CONST_NAMES = Map.of(
-		Cover.class,          PropertyName.construct("cover"),
-		CreatedTime.class,    PropertyName.construct("created_time"),
-		LastEditedBy.class,   PropertyName.construct("last_edited_by"),
-		LastEditedTime.class, PropertyName.construct("last_edited_time"),
-		PageId.class,         PropertyName.construct("id"),
-		Title.class,          PropertyName.construct("title")
+	private static final Map<Class<? extends Annotation>, PropertyName> MAP_CONST_NAMES = Map.ofEntries(
+		Map.entry(Cover.class,          PropertyName.construct("cover")),
+		Map.entry(CreatedTime.class,    PropertyName.construct("created_time")),
+		Map.entry(LastEditedBy.class,   PropertyName.construct("last_edited_by")),
+		Map.entry(LastEditedTime.class, PropertyName.construct("last_edited_time")),
+		Map.entry(PageId.class,         PropertyName.construct("id")),
+		Map.entry(Parent.class,         PropertyName.construct("parent")),
+		Map.entry(Title.class,          PropertyName.construct("title"))
 	);
 
 	@Override
