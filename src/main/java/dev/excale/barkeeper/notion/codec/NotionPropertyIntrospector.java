@@ -16,6 +16,8 @@ import java.util.Objects;
 @Slf4j
 public class NotionPropertyIntrospector extends JacksonAnnotationIntrospector {
 
+	private static final String PROPERTY_PACKAGE = PageId.class.getPackageName();
+
 	private static final Map<Class<? extends Annotation>, Class<?>> MAP_DESERIALIZERS = Map.of(
 		Cover.class,          CoverDeserializer.class,
 		CreatedTime.class,    InstantDeserializer.class,
@@ -86,6 +88,7 @@ public class NotionPropertyIntrospector extends JacksonAnnotationIntrospector {
 				return entry.getValue();
 
 		PropertyName name = extractNotionPropertyId(a);
+
 		return name != null ? name : super.findNameForDeserialization(config, a);
 	}
 
@@ -102,20 +105,22 @@ public class NotionPropertyIntrospector extends JacksonAnnotationIntrospector {
 	}
 
 	private PropertyName extractNotionPropertyId(Annotated a) {
+
+		// Iterate over all annotations on the field
 		return a.annotations()
-			// Filter only your custom Notion annotations
-			.filter(ann -> ann.annotationType()
+			// Filter only Notion annotations
+			.filter(
+				ann -> ann.annotationType()
 				.getPackageName()
-				.startsWith("dev.excale.barkeeper.notion.property"))
+				.startsWith(PROPERTY_PACKAGE)
+			)
+			// Extract the "value" property via reflection (if it exists)
 			.map(ann -> {
 				try {
-					// Extract the "value" property via reflection
-					Method valueMethod = ann.annotationType()
-						.getMethod("value");
+					Method valueMethod = ann.annotationType().getMethod("value");
 					String id = (String) valueMethod.invoke(ann);
 					return PropertyName.construct(id);
 				} catch(Exception e) {
-					// Ignore annotations that don't have a value() method
 					return null;
 				}
 			})
@@ -124,6 +129,7 @@ public class NotionPropertyIntrospector extends JacksonAnnotationIntrospector {
 			// Return the first match, or null if none found
 			.findFirst()
 			.orElse(null);
+
 	}
 
 }
