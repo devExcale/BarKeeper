@@ -16,45 +16,27 @@ import java.util.stream.Stream;
 
 public class MultiSelectDeserializer extends StdDeserializer<Object> {
 
-	private final MultiSelect annotation;
 	private final Class<?> rawClass;
 
 	@SuppressWarnings("unused")
 	public MultiSelectDeserializer() {
 		super(Object.class);
-		this.annotation = null;
 		this.rawClass = null;
 	}
 
-	public MultiSelectDeserializer(MultiSelect annotation, Class<?> rawClass) {
+	public MultiSelectDeserializer(Class<?> rawClass) {
 		super(Object.class);
-		this.annotation = annotation;
 		this.rawClass = rawClass;
 	}
 
 	@Override
 	public ValueDeserializer<?> createContextual(DeserializationContext ctx, BeanProperty property) throws DatabindException {
-		if(property == null) {
-			ctx.reportBadDefinition(handledType(), "Cannot use MultiSelectDeserializer outside of a field context. It must be attached to a specific field via @MultiSelect.");
-			return null;
-		}
-
-		MultiSelect meta = property.getAnnotation(MultiSelect.class);
-
-		if(meta == null) {
-			ctx.reportBadDefinition(handledType(), "Cannot use MultiSelectDeserializer without @MultiSelect annotation on field " + property.getName() + ".");
-			return null;
-		}
-
-		return new MultiSelectDeserializer(meta, property.getType().getRawClass());
+		Class<?> propertyClass = property == null ? null : property.getType().getRawClass();
+		return new MultiSelectDeserializer(propertyClass);
 	}
 
 	@Override
 	public Object deserialize(JsonParser p, DeserializationContext ctx) {
-		if (annotation == null) {
-			ctx.reportBadDefinition(handledType(), "MultiSelectDeserializer was not contextualized.");
-			return null;
-		}
 
 		JsonNode propertyNode = ctx.readTree(p);
 

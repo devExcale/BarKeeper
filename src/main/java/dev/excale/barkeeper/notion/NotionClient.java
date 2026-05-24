@@ -26,6 +26,9 @@ public interface NotionClient {
 	@PostMapping("/v1/data_sources/{id}/query")
 	List<GamePage> queryDataSource(@PathVariable("id") String datasourceId);
 
+	@PostMapping("/v1/pages")
+	GamePage createPage(GamePage row);
+
 	@PatchMapping("/v1/pages/{id}")
 	GamePage updatePage(@PathVariable("id") String pageId, GamePage row);
 

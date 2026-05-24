@@ -16,36 +16,41 @@ import java.util.Objects;
 @Slf4j
 public class NotionPropertyIntrospector extends JacksonAnnotationIntrospector {
 
-	private static final Map<Class<? extends Annotation>, Class<?>> MAP_DESERIALIZERS = Map.of(
-		Cover.class,          CoverDeserializer.class,
-		CreatedTime.class,    InstantDeserializer.class,
-		Date.class,           DateDeserializer.class,
-		LastEditedBy.class,   UserIdDeserializer.class,
-		LastEditedTime.class, InstantDeserializer.class,
-		MultiSelect.class,    MultiSelectDeserializer.class,
-		Number.class,         NumberDeserializer.class,
-		Select.class,         SelectDeserializer.class,
-		Title.class,          TitleDeserializer.class,
-		Url.class,            UrlDeserializer.class
+	private static final String PROPERTY_PACKAGE = PageId.class.getPackageName();
+
+	private static final Map<Class<? extends Annotation>, Class<?>> MAP_DESERIALIZERS = Map.ofEntries(
+		Map.entry(Cover.class,          CoverDeserializer.class),
+		Map.entry(CreatedTime.class,    InstantDeserializer.class),
+		Map.entry(Date.class,           DateDeserializer.class),
+		Map.entry(LastEditedBy.class,   UserIdDeserializer.class),
+		Map.entry(LastEditedTime.class, InstantDeserializer.class),
+		Map.entry(MultiSelect.class,    MultiSelectDeserializer.class),
+		Map.entry(Number.class,         NumberDeserializer.class),
+		Map.entry(Parent.class,         ParentDeserializer.class),
+		Map.entry(Select.class,         SelectDeserializer.class),
+		Map.entry(Title.class,          TitleDeserializer.class),
+		Map.entry(Url.class,            UrlDeserializer.class)
 	);
 
-	private static final Map<Class<? extends Annotation>, Class<?>> MAP_SERIALIZERS = Map.of(
-		Cover.class,       CoverSerializer.class,
-		Date.class,        DateSerializer.class,
-		MultiSelect.class, MultiSelectSerializer.class,
-		Number.class,      NumberSerializer.class,
-		Select.class,      SelectSerializer.class,
-		Title.class,       TitleSerializer.class,
-		Url.class,         UrlSerializer.class
+	private static final Map<Class<? extends Annotation>, Class<?>> MAP_SERIALIZERS = Map.ofEntries(
+		Map.entry(Cover.class,       CoverSerializer.class),
+		Map.entry(Date.class,        DateSerializer.class),
+		Map.entry(MultiSelect.class, MultiSelectSerializer.class),
+		Map.entry(Number.class,      NumberSerializer.class),
+		Map.entry(Parent.class,      ParentSerializer.class),
+		Map.entry(Select.class,      SelectSerializer.class),
+		Map.entry(Title.class,       TitleSerializer.class),
+		Map.entry(Url.class,         UrlSerializer.class)
 	);
 
-	private static final Map<Class<? extends Annotation>, PropertyName> MAP_CONST_NAMES = Map.of(
-		Cover.class,          PropertyName.construct("cover"),
-		CreatedTime.class,    PropertyName.construct("created_time"),
-		LastEditedBy.class,   PropertyName.construct("last_edited_by"),
-		LastEditedTime.class, PropertyName.construct("last_edited_time"),
-		PageId.class,         PropertyName.construct("id"),
-		Title.class,          PropertyName.construct("title")
+	private static final Map<Class<? extends Annotation>, PropertyName> MAP_CONST_NAMES = Map.ofEntries(
+		Map.entry(Cover.class,          PropertyName.construct("cover")),
+		Map.entry(CreatedTime.class,    PropertyName.construct("created_time")),
+		Map.entry(LastEditedBy.class,   PropertyName.construct("last_edited_by")),
+		Map.entry(LastEditedTime.class, PropertyName.construct("last_edited_time")),
+		Map.entry(PageId.class,         PropertyName.construct("id")),
+		Map.entry(Parent.class,         PropertyName.construct("parent")),
+		Map.entry(Title.class,          PropertyName.construct("title"))
 	);
 
 	@Override
@@ -86,6 +91,7 @@ public class NotionPropertyIntrospector extends JacksonAnnotationIntrospector {
 				return entry.getValue();
 
 		PropertyName name = extractNotionPropertyId(a);
+
 		return name != null ? name : super.findNameForDeserialization(config, a);
 	}
 
@@ -102,20 +108,22 @@ public class NotionPropertyIntrospector extends JacksonAnnotationIntrospector {
 	}
 
 	private PropertyName extractNotionPropertyId(Annotated a) {
+
+		// Iterate over all annotations on the field
 		return a.annotations()
-			// Filter only your custom Notion annotations
-			.filter(ann -> ann.annotationType()
+			// Filter only Notion annotations
+			.filter(
+				ann -> ann.annotationType()
 				.getPackageName()
-				.startsWith("dev.excale.barkeeper.notion.property"))
+				.startsWith(PROPERTY_PACKAGE)
+			)
+			// Extract the "value" property via reflection (if it exists)
 			.map(ann -> {
 				try {
-					// Extract the "value" property via reflection
-					Method valueMethod = ann.annotationType()
-						.getMethod("value");
+					Method valueMethod = ann.annotationType().getMethod("value");
 					String id = (String) valueMethod.invoke(ann);
 					return PropertyName.construct(id);
 				} catch(Exception e) {
-					// Ignore annotations that don't have a value() method
 					return null;
 				}
 			})
@@ -124,6 +132,7 @@ public class NotionPropertyIntrospector extends JacksonAnnotationIntrospector {
 			// Return the first match, or null if none found
 			.findFirst()
 			.orElse(null);
+
 	}
 
 }

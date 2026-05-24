@@ -5,10 +5,11 @@ import tools.jackson.databind.DeserializationContext;
 import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.deser.std.StdDeserializer;
 
-public class CoverDeserializer extends StdDeserializer<Object> {
+import java.util.UUID;
 
-	@SuppressWarnings("unused")
-	public CoverDeserializer() {
+public class ParentDeserializer extends StdDeserializer<Object> {
+
+	public ParentDeserializer() {
 		super(Object.class);
 	}
 
@@ -16,14 +17,14 @@ public class CoverDeserializer extends StdDeserializer<Object> {
 	public Object deserialize(JsonParser p, DeserializationContext ctx) {
 
 		JsonNode root = ctx.readTree(p);
-
 		if (root == null || root.isNull())
 			return null;
 
-		return root.optional("external")
-			.map(node -> node.get("url"))
-			.map(JsonNode::asString)
-			.orElse(null);
+		JsonNode dataSourceNode = root.get("data_source_id");
+		if (dataSourceNode == null || dataSourceNode.isNull())
+			return null;
+
+		return UUID.fromString(dataSourceNode.asString());
 	}
 
 }
