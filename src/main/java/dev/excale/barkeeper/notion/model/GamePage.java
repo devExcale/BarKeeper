@@ -1,5 +1,7 @@
 package dev.excale.barkeeper.notion.model;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+
 import dev.excale.barkeeper.notion.property.*;
 import dev.excale.barkeeper.notion.property.Number;
 import lombok.Data;
@@ -14,6 +16,7 @@ import java.util.UUID;
 @NoArgsConstructor
 public class GamePage {
 
+	@JsonInclude(JsonInclude.Include.NON_NULL)
 	@PageId
 	private UUID id;
 
@@ -31,6 +34,9 @@ public class GamePage {
 
 	@LastEditedBy
 	private UUID lastEditedBy;
+
+	@Parent
+	private UUID parent;
 
 	@Select("byYs")
 	private String store;
@@ -63,4 +69,3 @@ public class GamePage {
 	private String notes;
 
 }
-
