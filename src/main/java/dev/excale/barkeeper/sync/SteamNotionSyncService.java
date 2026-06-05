@@ -47,7 +47,7 @@ public class SteamNotionSyncService {
 	}
 
 	// 1:30 PM every day
-	@Scheduled(cron = "0 30 13 * * *")
+	@Scheduled(cron = "0 30 13 * * *", zone = "${sync.cron.timezone:Europe/Rome}")
 	public void sync() {
 
 		log.info("Starting Steam-Notion sync...");
