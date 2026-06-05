@@ -29,7 +29,7 @@ public class SalesNotifierService {
 	private final SalesNotifSettingsRepository settingsRepository;
 
 	// 2:00 PM every day
-	@Scheduled(cron = "0 0 14 * * *")
+	@Scheduled(cron = "0 0 14 * * *", zone = "${sync.cron.timezone:Europe/Rome}")
 	public void sendSalesNotificationBatch() {
 
 		// Retrieve all games on sale
