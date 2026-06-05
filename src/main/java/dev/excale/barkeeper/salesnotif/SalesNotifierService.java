@@ -10,6 +10,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
@@ -71,28 +72,38 @@ public class SalesNotifierService {
 		if(games == null)
 			games = getGamesOnSale();
 
-		StringBuilder message = new StringBuilder("Today's discounted games!\n");
+		StringBuilder message = new StringBuilder("## Today's Sales! <t:")
+			.append(System.currentTimeMillis() / 1000)
+			.append(":D>");
 
-		for(GamePage game : games) {
+		games.stream()
+			.sorted(
+				Comparator.comparing((GamePage g) -> g.getDiscountPrice() / g.getFullPrice())
+					.thenComparing(GamePage::getDiscountPrice)
+			)
+			.forEach(game -> {
 
-			String hyperlink = "- [" + String.join("", game.getTitle()) + "](" + game.getStorePage() + ")";
+				String title = String.join("", game.getTitle());
+				Double discountPrice = game.getDiscountPrice();
+				Double fullPrice = game.getFullPrice();
+				long percentage = Math.round((1 - discountPrice / fullPrice) * 100);
 
-			Double discountPrice = game.getDiscountPrice();
-			Double fullPrice = game.getFullPrice();
-			long percentage = Math.round((1 - discountPrice / fullPrice) * 100);
+				message.append("\n### [")
+					.append(title)
+					.append("](")
+					.append(game.getStorePage())
+					.append(")\n~~€")
+					.append(fullPrice)
+					.append("~~  →  **€")
+					.append(discountPrice)
+					.append("**  *(")
+					.append(percentage)
+					.append("% off)*");
 
-			message.append('\n')
-				.append(hyperlink)
-				.append(" - **€")
-				.append(discountPrice)
-				.append("** ~~€")
-				.append(fullPrice)
-				.append("~~ *(")
-				.append(percentage)
-				.append("%)*");
-		}
+			});
 
-		channel.sendMessage(message.toString()).queue();
+		channel.sendMessage(message.toString())
+			.queue();
 
 	}
 
