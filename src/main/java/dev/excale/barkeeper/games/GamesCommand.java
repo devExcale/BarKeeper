@@ -33,7 +33,7 @@ import static dev.excale.barkeeper.discord.DiscordUtil.replyEphemeralWith;
 @RequiredArgsConstructor
 @CommandController(
 	name = "games",
-	description = "www"
+	description = "Manage the games watchlist"
 )
 public class GamesCommand {
 
@@ -53,11 +53,11 @@ public class GamesCommand {
 
 	@SlashMapping(
 		name = "add",
-		description = "www"
+		description = "Add a game to the watchlist"
 	)
 	public ReplyCallbackAction addGame(
 		SlashCommandInteractionEvent event,
-		@CmdOption(name = "name", description = "Channel open name") String storeUrl
+		@CmdOption(name = "steamUrl", description = "Game's URL on the Steam store") String storeUrl
 	) {
 
 		// Extract the app ID from the provided URL using the regex pattern
