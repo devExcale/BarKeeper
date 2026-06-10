@@ -57,7 +57,7 @@ public class GamesCommand {
 	)
 	public ReplyCallbackAction addGame(
 		SlashCommandInteractionEvent event,
-		@CmdOption(name = "steamUrl", description = "Game's URL on the Steam store") String storeUrl
+		@CmdOption(name = "url", description = "Game's URL on the Steam store") String storeUrl
 	) {
 
 		// Extract the app ID from the provided URL using the regex pattern
