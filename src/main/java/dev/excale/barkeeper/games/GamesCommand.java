@@ -15,6 +15,7 @@ import lombok.extern.log4j.Log4j2;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.components.actionrow.ActionRow;
 import net.dv8tion.jda.api.components.buttons.Button;
+import net.dv8tion.jda.api.components.label.Label;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
@@ -133,12 +134,25 @@ public class GamesCommand {
 			int i = 0;
 			for(StoreSearchItem item : items) {
 
+				// Title: 1. <game name>
+				String title = String.format("%d. %s", i + 1, item.getName());
+				title = title.substring(0, Math.min(Button.LABEL_MAX_LENGTH, title.length()));
+
+				// Description: [Steam](https://s.team/a/<appId>)
+				String description = String.format("[Steam](%s)", "https://s.team/a/" + item.getId());
+
+				// Footer: [i/total] Searched for: "<name>"
+				String footer = String.format("[%d/%d] Searched for: \"%s\"", i + 1, total, name);
+
+				// Color: Hash of the game name (truncated to 24 bits for RGB)
+				int color = item.getName().hashCode() & 0xFFFFFF;
+
 				EmbedBuilder builder = new EmbedBuilder()
-					.setTitle(String.format("%d. %s", i + 1, item.getName()))
-					.setDescription(String.format("[Steam](%s)", "https://s.team/a/" + item.getId()))
+					.setTitle(title)
+					.setDescription(description)
 					.setImage(item.getTinyImage())
-					.setFooter(String.format("[%d/%d] Searched for: \"%s\"", i + 1, total, name))
-					.setColor(item.getName().hashCode() & 0xFFFFFF);
+					.setFooter(footer)
+					.setColor(color);
 
 				embeds.add(builder.build());
 
@@ -149,7 +163,7 @@ public class GamesCommand {
 				row.add(
 					Button.primary(
 						commandDispatcher.serializeBtnOptions("add", item.getId()),
-						(i + 1) + ". " + item.getName()
+						title
 					)
 				);
 
