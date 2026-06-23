@@ -38,8 +38,13 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git commit -am "chore: release version ${{ steps.bump_version.outputs.version }}"
-          git push origin master
+          
+          if ! git diff --quiet; then
+            git commit -am "chore: release version ${{ steps.bump_version.outputs.version }}"
+            git push origin master
+          else
+            echo "No SNAPSHOT detected in POM."
+          fi
 
       - name: Package Application
         # Tests are skipped because they already passed in the PR Validation workflow
