@@ -1,7 +1,6 @@
 package dev.excale.barkeeper.notion.model;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-
 import dev.excale.barkeeper.notion.property.*;
 import dev.excale.barkeeper.notion.property.Number;
 import lombok.Data;
@@ -67,5 +66,13 @@ public class GamePage {
 
 	//	@Property(id = "hUwy", type = "rich_text")
 	private String notes;
+
+	public Integer getDiscountPercent() {
+
+		if(fullPrice == null || discountPrice == null)
+			return null;
+
+		return (int) Math.round((1 - discountPrice / fullPrice) * 100);
+	}
 
 }
