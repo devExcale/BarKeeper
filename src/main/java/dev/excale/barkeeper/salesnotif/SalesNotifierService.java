@@ -48,18 +48,22 @@ public class SalesNotifierService {
 		for(SalesNotifSettings settings : settingsRepository.findAll()) {
 
 			// Get guild channel
-			Optional<TextChannel> optChannel = Optional.of(settings.getGuildId())
+			TextChannel channel = Optional.of(settings.getGuildId())
 				.map(jda::getGuildById)
-				.map(guild -> guild.getTextChannelById(settings.getChannelId()));
+				.map(guild -> guild.getTextChannelById(settings.getChannelId()))
+				.orElse(null);
 
-			// Ignore invalid guilds/channels
-			if(optChannel.isEmpty())
-				continue;
+			ForumChannel forum = Optional.of(settings.getGuildId())
+				.map(jda::getGuildById)
+				.map(guild -> guild.getForumChannelById(settings.getChannelId()))
+				.orElse(null);
 
-			sendSalesNotificationGuild(optChannel.get(), games);
+			if(channel != null)
+				sendSalesNotificationGuild(channel, games);
+			else if(forum != null)
+				sendSalesNotificationUsingThread(forum, games);
 
 		}
-
 
 	}
 
