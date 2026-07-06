@@ -5,6 +5,8 @@ import dev.excale.barkeeper.discord.command.annotation.CommandController;
 import dev.excale.barkeeper.discord.command.annotation.SlashMapping;
 import lombok.RequiredArgsConstructor;
 import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.channel.ChannelType;
+import net.dv8tion.jda.api.entities.channel.concrete.ForumChannel;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.entities.channel.unions.GuildChannelUnion;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
@@ -49,7 +51,7 @@ public class SalesCommand {
 
 		if(channel == null && optSettings.map(SalesNotifSettings::getChannelId).isEmpty())
 			return replyEphemeralWith("You must set a channel where to receive notifications with `/sales enable <channel>`", event);
-		else if(channel != null && !channel.getType().isMessage())
+		else if(channel != null && !(channel.getType().isMessage() || channel.getType() == ChannelType.FORUM))
 			return replyEphemeralWith("The specified channel must be a text channel", event);
 		else
 			settings = optSettings.orElseGet(
@@ -121,14 +123,23 @@ public class SalesCommand {
 
 		// Get channel
 		TextChannel channel = guild.getTextChannelById(settings.getChannelId());
-		if(channel == null)
+		ForumChannel forum = guild.getForumChannelById(settings.getChannelId());
+		if(channel == null && forum == null)
 			return replyEphemeralWith("Sales notifications are not set up in this guild", event);
 
+		String channelMention;
+
 		// Send discounted games
-		notifierService.sendSalesNotificationGuild(channel);
+		if(channel != null) {
+			notifierService.sendSalesNotificationGuild(channel);
+			channelMention = channel.getAsMention();
+		} else {
+			notifierService.sendSalesNotificationUsingThread(forum);
+			channelMention = forum.getAsMention();
+		}
 
 		// Reply to user
-		return replyEphemeralWith("Sent sales notification in " + channel.getAsMention(), event);
+		return replyEphemeralWith("Sent sales notification in " + channelMention, event);
 	}
 
 }
