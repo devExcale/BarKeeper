@@ -12,11 +12,13 @@ import net.dv8tion.jda.api.entities.channel.concrete.ForumChannel;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.entities.channel.concrete.ThreadChannel;
 import net.dv8tion.jda.api.entities.channel.forums.ForumPost;
+import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.utils.messages.MessageCreateData;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
+import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -62,6 +64,57 @@ public class SalesNotifierService {
 				sendSalesNotificationGuild(channel, games);
 			else if(forum != null)
 				sendSalesNotificationUsingThread(forum, games);
+
+		}
+
+	}
+
+	// 1:30 PM every day
+	@Scheduled(cron = "0 30 13 * * *", zone = "${sync.cron.timezone:Europe/Rome}")
+	public void cleanupSalesNotificationThreads() {
+
+		// Get date at a week ago
+		OffsetDateTime sevenDaysAgo = OffsetDateTime.now().minusDays(7);
+
+		// Loop registered guilds
+		for(SalesNotifSettings settings : settingsRepository.findAll()) {
+
+			// Get forum channel
+			ForumChannel forum = Optional.of(settings.getGuildId())
+				.map(jda::getGuildById)
+				.map(guild -> guild.getForumChannelById(settings.getChannelId()))
+				.orElse(null);
+
+			// Skip if forum channel is not found
+			if(forum == null)
+				continue;
+
+			forum.getThreadChannels()
+				.stream()
+				.filter(ch -> ch.getTimeCreated().isBefore(sevenDaysAgo))
+				.map(ThreadChannel::delete)
+				.reduce(
+					// Identity (start)
+					CompletableFuture.completedFuture((Void) null),
+					// Accumulator (reduce into future chains)
+					(chain, delete) -> chain.thenCompose(v -> delete.submit()),
+					// Combiner (mandatory for parallel streams, not used)
+					(chain1, chain2) -> chain1.thenCompose(v -> chain2)
+				)
+				.whenComplete((res, err) -> {
+
+					if(err == null)
+						log.info(
+							"Cleaned up old threads in forum {} in guild {}",
+							forum.getId(), settings.getGuildId()
+						);
+					else
+						log.error(
+							"Error cleaning up old threads in forum {} in guild {}",
+							forum.getId(), settings.getGuildId(), err
+						);
+
+				});
 
 		}
 
