@@ -1,7 +1,7 @@
 package dev.excale.barkeeper.discord;
 
 import dev.excale.barkeeper.discord.command.event.CommandUpdateEvent;
-import lombok.Getter;
+import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
@@ -20,7 +20,6 @@ import java.util.stream.Collectors;
 @Component
 public class DiscordService {
 
-	@Getter(onMethod_ = @Bean(destroyMethod = "shutdown"))
 	private final JDA jda;
 
 	public DiscordService(
@@ -38,6 +37,12 @@ public class DiscordService {
 			.build();
 
 		log.info("JDA connected");
+	}
+
+	@SneakyThrows
+	@Bean(destroyMethod = "shutdown")
+	public JDA getJda() {
+		return jda.awaitReady();
 	}
 
 	@EventListener

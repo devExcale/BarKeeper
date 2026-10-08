@@ -12,8 +12,9 @@ import net.dv8tion.jda.api.entities.channel.concrete.ForumChannel;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.entities.channel.concrete.ThreadChannel;
 import net.dv8tion.jda.api.entities.channel.forums.ForumPost;
-import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.utils.messages.MessageCreateData;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
+import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
@@ -29,7 +30,6 @@ import java.util.concurrent.CompletableFuture;
 @Service
 public class SalesNotifierService {
 
-	@SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
 	private final JDA jda;
 
 	@SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
@@ -70,6 +70,7 @@ public class SalesNotifierService {
 	}
 
 	// 1:30 PM every day
+	@EventListener(ApplicationReadyEvent.class)
 	@Scheduled(cron = "0 30 13 * * *", zone = "${sync.cron.timezone:Europe/Rome}")
 	public void cleanupSalesNotificationThreads() {
 
@@ -80,7 +81,7 @@ public class SalesNotifierService {
 		for(SalesNotifSettings settings : settingsRepository.findAll()) {
 
 			// Get forum channel
-			ForumChannel forum = Optional.of(settings.getGuildId())
+			ForumChannel forum = Optional.ofNullable(settings.getGuildId())
 				.map(jda::getGuildById)
 				.map(guild -> guild.getForumChannelById(settings.getChannelId()))
 				.orElse(null);
@@ -89,30 +90,56 @@ public class SalesNotifierService {
 			if(forum == null)
 				continue;
 
-			forum.getThreadChannels()
-				.stream()
-				.filter(ch -> ch.getTimeCreated().isBefore(sevenDaysAgo))
-				.map(ThreadChannel::delete)
-				.reduce(
-					// Identity (start)
-					CompletableFuture.completedFuture((Void) null),
-					// Accumulator (reduce into future chains)
-					(chain, delete) -> chain.thenCompose(v -> delete.submit()),
-					// Combiner (mandatory for parallel streams, not used)
-					(chain1, chain2) -> chain1.thenCompose(v -> chain2)
-				)
-				.whenComplete((res, err) -> {
+			// Get active threads
+			List<ThreadChannel> threadChannels = new ArrayList<>(forum.getThreadChannels());
 
-					if(err == null)
-						log.info(
-							"Cleaned up old threads in forum {} in guild {}",
-							forum.getId(), settings.getGuildId()
-						);
-					else
-						log.error(
-							"Error cleaning up old threads in forum {} in guild {}",
-							forum.getId(), settings.getGuildId(), err
-						);
+			// Get archived channels
+			forum.retrieveArchivedPublicThreadChannels()
+				.forEachAsync(archivedThread -> {
+
+					threadChannels.add(archivedThread);
+
+					// continue pagination until exhausted
+					return true;
+
+				})
+				.thenAccept(
+					v -> threadChannels.stream()
+						.filter(ch -> ch.getTimeCreated().isBefore(sevenDaysAgo))
+						.map(ThreadChannel::delete)
+						.reduce(
+							// Identity (start)
+							CompletableFuture.completedFuture((Void) null),
+							// Accumulator (reduce into future chains)
+							(chain, delete) -> chain.thenCompose(res -> delete.submit()),
+							// Combiner (mandatory for parallel streams, not used)
+							(chain1, chain2) -> chain1.thenCompose(res -> chain2)
+						)
+						.whenComplete((res, err) -> {
+
+							if(err == null)
+								log.info(
+									"Cleaned up old threads in forum {} in guild {}",
+									forum.getId(), settings.getGuildId()
+								);
+							else
+								log.error(
+									"Error cleaning up old threads in forum {} in guild {}",
+									forum.getId(), settings.getGuildId(),
+									err
+								);
+
+						})
+
+				)
+				.exceptionally(err -> {
+
+					log.error(
+						"Failed to retrieve archived threads for forum {} in guild {}",
+						forum.getId(), settings.getGuildId(),
+						err
+					);
+					return null;
 
 				});
 
